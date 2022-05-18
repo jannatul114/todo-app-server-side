@@ -3,7 +3,7 @@ const express = require('express')
 const app = express()
 const port = process.env.PORT || 5000;
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 // moddlewares
@@ -17,7 +17,38 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function run() {
 
+
     try {
+        await client.connect();
+        const TaskCollection = client.db("allTasks").collection("task");
+
+        app.post('/tasks', async (req, res) => {
+            const body = req.body;
+            const result = await TaskCollection.insertOne(body);
+            res.send(result);
+        })
+
+        app.get('/tasks', async (req, res) => {
+            const email = req.query.email;
+            const query = { user: email }
+            const cursor = TaskCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result)
+        })
+        app.get('/tasks/:id', async (req, res) => {
+            const id = req.params.id;
+            const quary = { _id: ObjectId(id) }
+            const cursor = await TaskCollection.findOne(quary);
+            res.send(cursor);
+        })
+
+        app.delete('/tasks/:id', async (req, res) => {
+            const id = req.params.id;
+            const quary = { _id: ObjectId(id) }
+            const result = await TaskCollection.deleteOne(quary);
+            res.send(result);
+        })
+
 
     }
 
