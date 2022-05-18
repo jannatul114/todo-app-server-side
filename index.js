@@ -50,6 +50,16 @@ async function run() {
             res.send(result);
         })
 
+        app.put('/tasks/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: { complete: true }
+            }
+            const result = await TaskCollection.updateOne(query, updateDoc, options);
+            res.send(result)
+        })
 
     }
 
