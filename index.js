@@ -16,8 +16,6 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run() {
-
-
     try {
         await client.connect();
         const TaskCollection = client.db("allTasks").collection("task");
@@ -28,7 +26,7 @@ async function run() {
             res.send(result);
         })
 
-        //task added
+        //task adding
         app.get('/tasks', async (req, res) => {
             const email = req.query.email;
             const query = { user: email }
@@ -36,6 +34,8 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result)
         })
+
+        //getting tasks by specific id
         app.get('/tasks/:id', async (req, res) => {
             const id = req.params.id;
             const quary = { _id: ObjectId(id) }
@@ -43,6 +43,7 @@ async function run() {
             res.send(cursor);
         })
 
+        //deleting specific task
         app.delete('/tasks/:id', async (req, res) => {
             const id = req.params.id;
             const quary = { _id: ObjectId(id) }
@@ -50,6 +51,7 @@ async function run() {
             res.send(result);
         })
 
+        //I used put methot for strikethrough completed task
         app.put('/tasks/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
